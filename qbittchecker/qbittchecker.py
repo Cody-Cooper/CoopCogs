@@ -12,11 +12,12 @@ class QbittChecker(commands.Cog):
         self.qbittorrent_password = 'adminadmin'  # Your qBittorrent password
 
     async def login(self):
+        headers = {'Referer': self.qbittorrent_url}
         async with aiohttp.ClientSession() as session:
             async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
                 'username': self.qbittorrent_username,
                 'password': self.qbittorrent_password
-            }) as response:
+            }, headers=headers) as response:
                 cookies = session.cookie_jar.filter_cookies(
                     self.qbittorrent_url)
                 return cookies
