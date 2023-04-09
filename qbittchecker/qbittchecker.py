@@ -18,11 +18,15 @@ class QbittChecker(commands.Cog):
                 'username': self.qbittorrent_username,
                 'password': self.qbittorrent_password
             }, headers=headers) as response:
+                print(f"Status code: {response.status}")
+                print(f"Response content: {await response.text()}")
                 cookies = session.cookie_jar.filter_cookies(
                     self.qbittorrent_url)
+                print(f"Cookies: {cookies}")
                 return cookies
 
     async def get_torrents(self, cookies):
+        print("get_torrents called")
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading') as response:
                 body = await response.text()
@@ -45,5 +49,3 @@ class QbittChecker(commands.Cog):
             name = torrent['name']
             embed.add_field(
                 name=name, value=f"Status: {status}\nProgress: {progress}")
-
-        await ctx.send(embed=embed)
