@@ -53,7 +53,7 @@ class QbittChecker(commands.Cog):
             return
 
         embed = discord.Embed(
-            title=f'qBittorrent Downloads ({ip_address})', color=0xff0000)
+            title=f'qBittorrent Downloads', color=0xff0000)
         for torrent in torrents:
             progress = f"{torrent['progress'] * 100:.2f}%"
             status = torrent['state']
