@@ -55,8 +55,8 @@ class QbittChecker(commands.Cog):
         # Filter torrents by status
         downloading = [
             torrent for torrent in torrents if torrent['state'] == "downloading"]
-        stalled = [torrent for torrent in torrents if torrent['state']
-                   == "stalled_downloading"]
+        stalled = [
+            torrent for torrent in torrents if torrent['state'] == "stalled_downloading"]
         errored = [
             torrent for torrent in torrents if torrent['state'] == "errored"]
 
