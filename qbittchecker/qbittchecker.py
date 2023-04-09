@@ -22,6 +22,7 @@ class QbittChecker(commands.Cog):
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading') as response:
                 body = await response.text()
+                print(body)
                 torrents = await response.json()
                 return torrents
 
