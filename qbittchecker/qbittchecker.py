@@ -1,13 +1,15 @@
 from redbot.core import commands
 import aiohttp
-import socket 
+import socket
+
 
 class QbittChecker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.qbittorrent_url = 'http://192.168.1.68:8800' # URL of your qBittorrent client WebUI
-        self.qbittorrent_username = 'admin' # Your qBittorrent username
-        self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
+        # URL of your qBittorrent client WebUI
+        self.qbittorrent_url = 'http://192.168.1.68:8800'
+        self.qbittorrent_username = 'admin'  # Your qBittorrent username
+        self.qbittorrent_password = 'adminadmin'  # Your qBittorrent password
 
     async def login(self):
         async with aiohttp.ClientSession() as session:
@@ -15,7 +17,8 @@ class QbittChecker(commands.Cog):
                 'username': self.qbittorrent_username,
                 'password': self.qbittorrent_password
             }) as response:
-                cookies = session.cookie_jar.filter_cookies(self.qbittorrent_url)
+                cookies = session.cookie_jar.filter_cookies(
+                    self.qbittorrent_url)
                 return cookies
 
     async def get_torrents(self, cookies):
@@ -28,16 +31,18 @@ class QbittChecker(commands.Cog):
 
     @commands.command()
     async def downloads(self, ctx):
-        hostname = socket.gethostname()   
+        hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
         cookies = await self.login()
         torrents = await self.get_torrents(cookies)
 
-        embed = discord.Embed(title=f'qBittorrent Downloads ({ip_address})', color=0xff0000)
+        embed = discord.Embed(
+            title=f'qBittorrent Downloads ({ip_address})', color=0xff0000)
         for torrent in torrents:
             progress = f"{torrent['progress'] * 100:.2f}%"
             status = torrent['state']
             name = torrent['name']
-            embed.add_field(name=name, value=f"Status: {status}\nProgress: {progress}")
+            embed.add_field(
+                name=name, value=f"Status: {status}\nProgress: {progress}")
 
         await ctx.send(embed=embed)
