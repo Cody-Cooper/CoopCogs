@@ -66,20 +66,26 @@ class QbittChecker(commands.Cog):
         # Add errored section
         if errored:
             value = "\n".join([f"{torrent['name']}" for torrent in errored])
-            embed.add_field(name="Errored", value=value, inline=True)
+            embed.add_field(name="Errored", value=value, inline=False)
+        else:
+            embed.add_field(
+                name="Errored", value="No errors!", inline=False)
 
         # Add stalled section
         if stalled:
             value = "\n".join(
                 [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in stalled])
             embed.add_field(name="Stalled Downloads",
-                            value=value, inline=True)
+                            value=value, inline=False)
+        else:
+            embed.add_field(
+                name="Stalled Downloads", value="Nothing stalled!", inline=False)
 
         # Add downloading section
         if downloading:
             value = "\n".join(
                 [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in downloading])
-            embed.add_field(name="Downloading", value=value, inline=True)
+            embed.add_field(name="Downloading", value=value, inline=False)
         else:
             embed.add_field(
                 name="Downloading", value="Nothing downloading currently!", inline=False)
