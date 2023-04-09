@@ -1,6 +1,7 @@
 from redbot.core import commands
 import aiohttp
 import socket
+import discord
 
 
 class QbittChecker(commands.Cog):
@@ -14,21 +15,16 @@ class QbittChecker(commands.Cog):
     async def login(self):
         headers = {'Referer': self.qbittorrent_url}
         async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
-                    'username': self.qbittorrent_username,
-                    'password': self.qbittorrent_password
-                }, headers=headers) as response:
-                    print(f"Status code: {response.status}")
-                    print(f"Response content: {await response.text()}")
-                    response.raise_for_status()
-                    cookies = session.cookie_jar.filter_cookies(
-                        self.qbittorrent_url)
-                    print(f"Cookies: {cookies}")
-                    return cookies
-            except aiohttp.ClientError as e:
-                print(f"Error during login: {e}")
-                return None
+            async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
+                'username': self.qbittorrent_username,
+                'password': self.qbittorrent_password
+            }, headers=headers) as response:
+                print(f"Status code: {response.status}")
+                print(f"Response content: {await response.text()}")
+                cookies = session.cookie_jar.filter_cookies(
+                    self.qbittorrent_url)
+                print(f"Cookies: {cookies}")
+                return cookies
 
     async def get_torrents(self, cookies):
         print("get_torrents called")
@@ -38,13 +34,13 @@ class QbittChecker(commands.Cog):
         async with aiohttp.ClientSession(cookie_jar=jar) as session:
             try:
                 async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading', headers=headers) as response:
-                    response.raise_for_status()
                     body = await response.text()
                     print(body)
                     torrents = await response.json()
                     return torrents
-            except aiohttp.ClientError as e:
-                print(f"Error during get_torrents: {e}")
+            except Exception as e:
+                print(
+                    f"Error retrieving torrents from qBittorrent client: {str(e)}")
                 return None
 
     @commands.command()
@@ -52,10 +48,8 @@ class QbittChecker(commands.Cog):
         hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
         cookies = await self.login()
-        if cookies is None:
-            await ctx.send("Error logging in to qBittorrent client.")
-            return
         torrents = await self.get_torrents(cookies)
+
         if torrents is None:
             await ctx.send("Error retrieving torrents from qBittorrent client.")
             return
