@@ -1,6 +1,16 @@
 {
-    "name": "qbittchecker",
-    "description": "A cog for checking the status of torrents in qBittorrent.",
-    "author": "Cody Cooper",
-    "version": "1.0.0"
+    "name": "qBittChecker",
+    "author": [
+        "Cascodius (Cascodius#0001)"
+    ],
+    "short": "Check status of downloads in qBittorrent",
+    "description": "This cog checks downloads in a qBittorrent instance running on Web UI via its API. It checks and prints out the details for errored downloads, stalled downloads, and active downloads along with the amount of seeds, percentage complete, and ETA.",
+    "install_msg": "Thanks for installing qBittorrent! For a quick rundown on how to get started with this cog, check out [the readme](https://github.com/Cody-Cooper/CoopCogs/tree/main/qbittchecker/README.md)",
+    "tags": [
+        "starr apps",
+        "torrents",
+        "utility"
+    ],
+    "min_bot_version": "1.0.0",
+    "end_user_data_statement": "This cog does not persistently store data or metadata about users."
 }
