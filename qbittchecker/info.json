@@ -1,0 +1,6 @@
+{
+    "name": "qbittchecker",
+    "description": "A cog for checking the status of torrents in qBittorrent.",
+    "author": "Cody Cooper",
+    "version": "1.0.0",
+}
