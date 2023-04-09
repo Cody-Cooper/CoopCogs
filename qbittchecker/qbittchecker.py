@@ -26,7 +26,6 @@ class QbittChecker(commands.Cog):
                 print(f"Response content: {await response.text()}")
                 cookies = session.cookie_jar.filter_cookies(
                     self.qbittorrent_url)
-                print(f"Cookies: {cookies}")
                 return cookies
 
     async def get_torrents(self, cookies):
@@ -37,8 +36,6 @@ class QbittChecker(commands.Cog):
         async with aiohttp.ClientSession(cookie_jar=jar) as session:
             try:
                 async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info', headers=headers) as response:
-                    body = await response.text()
-                    print(f"Response body: {body}")
                     torrents = await response.json()
                     return torrents
             except Exception as e:
@@ -48,8 +45,6 @@ class QbittChecker(commands.Cog):
 
     @commands.command()
     async def downloads(self, ctx):
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
         cookies = await self.login()
         torrents = await self.get_torrents(cookies)
 
