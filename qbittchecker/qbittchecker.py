@@ -5,7 +5,7 @@ import socket
 class QbittChecker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.qbittorrent_url = 'http://172.17.0.2:8800' # URL of your qBittorrent client
+        self.qbittorrent_url = 'http://192.168.1.68:8080' # URL of your qBittorrent client WebUI
         self.qbittorrent_username = 'admin' # Your qBittorrent username
         self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
 
@@ -22,20 +22,21 @@ class QbittChecker(commands.Cog):
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading') as response:
                 body = await response.text()
-                print(body) # Print the response body
                 torrents = await response.json()
                 return torrents
 
     @commands.command()
     async def downloads(self, ctx):
-        hostname=socket.gethostname()   
-        IPAddr=socket.gethostbyname(hostname)
-        print("Your Computer IP Address is:"+IPAddr) 
+        hostname = socket.gethostname()   
+        ip_address = socket.gethostbyname(hostname)
         cookies = await self.login()
         torrents = await self.get_torrents(cookies)
 
-        embed = discord.Embed(title='qBittorrent Downloads', color=0xff0000)
+        embed = discord.Embed(title=f'qBittorrent Downloads ({ip_address})', color=0xff0000)
         for torrent in torrents:
-            embed.add_field(name=torrent['name'], value=f"Progress: {torrent['progress'] * 100}%")
+            progress = f"{torrent['progress'] * 100:.2f}%"
+            status = torrent['state']
+            name = torrent['name']
+            embed.add_field(name=name, value=f"Status: {status}\nProgress: {progress}")
 
         await ctx.send(embed=embed)
