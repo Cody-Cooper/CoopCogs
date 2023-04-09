@@ -8,8 +8,8 @@
 
 To install the QbittChecker cog, please follow these steps:
 
-Install the cog with the following command: [p]repos install https://github.com/Cody-Cooper/CoopCogs/
-Load the cog with the following command: [p]load qbittchecker
+Install the cog with the following command: `[p]repos install https://github.com/Cody-Cooper/CoopCogs/`
+Load the cog with the following command: `[p]load qbittchecker`
 
 Commands
 `[p]downloads`
@@ -23,9 +23,9 @@ This cog retrieves torrents from qBittorrent client using its REST API. The logi
 
 The cog uses environment variables to retrieve the qBittorrent URL, username, and password. The following environment variables must be set:
 
-- **QBITTORRENT_URL**: The URL of the qBittorrent client.
-- **QBITTORRENT_USERNAME**: The username for logging in to the qBittorrent client.
-- **QBITTORRENT_PASSWORD**: The password for logging in to the qBittorrent client.
+- `QBITTORRENT_URL`: The URL of the qBittorrent client.
+- `QBITTORRENT_USERNAME`: The username for logging in to the qBittorrent client.
+- `QBITTORRENT_PASSWORD`: The password for logging in to the qBittorrent client.
 
 If these environment variables are not set, the cog will not work properly.
 
