@@ -20,6 +20,8 @@ class QbittChecker(commands.Cog):
     async def get_torrents(self, cookies):
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info') as response:
+                body = await response.text()
+                print(body) # Print the response body
                 torrents = await response.json()
                 return torrents
 
