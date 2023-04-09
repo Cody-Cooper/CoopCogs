@@ -28,6 +28,7 @@ class QbittChecker(commands.Cog):
     @commands.command()
     async def downloads(self, ctx):
         cookies = await self.login()
+        print("Log in success")
         torrents = await self.get_torrents(cookies)
 
         embed = discord.Embed(title='qBittorrent Downloads', color=0xff0000)
