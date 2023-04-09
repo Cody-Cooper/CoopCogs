@@ -38,7 +38,7 @@ class QbittChecker(commands.Cog):
             try:
                 async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info', headers=headers) as response:
                     body = await response.text()
-                    print(body)
+                    print(f"Response body: {body}")
                     torrents = await response.json()
                     return torrents
             except Exception as e:
