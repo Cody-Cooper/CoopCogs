@@ -14,16 +14,21 @@ class QbittChecker(commands.Cog):
     async def login(self):
         headers = {'Referer': self.qbittorrent_url}
         async with aiohttp.ClientSession() as session:
-            async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
-                'username': self.qbittorrent_username,
-                'password': self.qbittorrent_password
-            }, headers=headers) as response:
-                print(f"Status code: {response.status}")
-                print(f"Response content: {await response.text()}")
-                cookies = session.cookie_jar.filter_cookies(
-                    self.qbittorrent_url)
-                print(f"Cookies: {cookies}")
-                return cookies
+            try:
+                async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
+                    'username': self.qbittorrent_username,
+                    'password': self.qbittorrent_password
+                }, headers=headers) as response:
+                    print(f"Status code: {response.status}")
+                    print(f"Response content: {await response.text()}")
+                    response.raise_for_status()
+                    cookies = session.cookie_jar.filter_cookies(
+                        self.qbittorrent_url)
+                    print(f"Cookies: {cookies}")
+                    return cookies
+            except aiohttp.ClientError as e:
+                print(f"Error during login: {e}")
+                return None
 
     async def get_torrents(self, cookies):
         print("get_torrents called")
@@ -31,18 +36,29 @@ class QbittChecker(commands.Cog):
         jar.update_cookies(cookies)
         headers = {'Referer': self.qbittorrent_url}
         async with aiohttp.ClientSession(cookie_jar=jar) as session:
-            async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading', headers=headers) as response:
-                body = await response.text()
-                print(body)
-                torrents = await response.json()
-                return torrents
+            try:
+                async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading', headers=headers) as response:
+                    response.raise_for_status()
+                    body = await response.text()
+                    print(body)
+                    torrents = await response.json()
+                    return torrents
+            except aiohttp.ClientError as e:
+                print(f"Error during get_torrents: {e}")
+                return None
 
     @commands.command()
     async def downloads(self, ctx):
         hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
         cookies = await self.login()
+        if cookies is None:
+            await ctx.send("Error logging in to qBittorrent client.")
+            return
         torrents = await self.get_torrents(cookies)
+        if torrents is None:
+            await ctx.send("Error retrieving torrents from qBittorrent client.")
+            return
 
         embed = discord.Embed(
             title=f'qBittorrent Downloads ({ip_address})', color=0xff0000)
@@ -52,3 +68,4 @@ class QbittChecker(commands.Cog):
             name = torrent['name']
             embed.add_field(
                 name=name, value=f"Status: {status}\nProgress: {progress}")
+        await ctx.send(embed=embed)
