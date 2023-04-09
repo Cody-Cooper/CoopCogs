@@ -19,6 +19,7 @@ class QbittChecker(commands.Cog):
 
     async def get_torrents(self, cookies):
         async with aiohttp.ClientSession(cookies=cookies) as session:
+            headers = {'Accept': 'application/json'}
             async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info') as response:
                 content_type = response.headers.get('Content-Type')
                 if content_type != 'application/json':
