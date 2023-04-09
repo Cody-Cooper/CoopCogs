@@ -1,6 +1,5 @@
 from redbot.core import commands
 import aiohttp
-import socket
 import discord
 
 
@@ -65,7 +64,8 @@ class QbittChecker(commands.Cog):
 
         # Add errored section
         if errored:
-            value = "\n".join([f"{torrent['name']}" for torrent in errored])
+            value = "\n".join(
+                [f"{torrent['name'][:35] + ('...' if len(torrent['name']) > 35 else '')}\n" for torrent in errored[:5]])
             embed.add_field(name="Errored", value=value, inline=False)
         else:
             embed.add_field(
@@ -74,7 +74,7 @@ class QbittChecker(commands.Cog):
         # Add stalled section
         if stalled:
             value = "\n".join(
-                [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in stalled])
+                [f"{torrent['name'][:35] + ('...' if len(torrent['name']) > 35 else '')}\n{torrent['num_seeds']} seeds - stalled at {torrent['progress'] * 100:.2f}%" for torrent in stalled[:5]])
             embed.add_field(name="Stalled Downloads",
                             value=value, inline=False)
         else:
@@ -84,7 +84,7 @@ class QbittChecker(commands.Cog):
         # Add downloading section
         if downloading:
             value = "\n".join(
-                [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in downloading])
+                [f"{torrent['name'][:35] + ('...' if len(torrent['name']) > 35 else '')}\n{torrent['num_seeds']} seeds - {torrent['progress'] * 100:.2f}% - {torrent['eta'] // 3600}h {(torrent['eta'] % 3600) // 60}m reamining\n" for torrent in downloading[:5]])
             embed.add_field(name="Downloading", value=value, inline=False)
         else:
             embed.add_field(
