@@ -1,41 +1,35 @@
 from redbot.core import commands
-import aiohttp
-import socket 
+import requests
 
-class QbittChecker(commands.Cog):
+class qBittorrentStatus(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.qbittorrent_url = 'http://192.168.1.68:8800' # URL of your qBittorrent client
-        self.qbittorrent_username = 'admin' # Your qBittorrent username
-        self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
-        hostname=socket.gethostname()   
-        IPAddr=socket.gethostbyname(hostname)
-
-    async def login(self):
-        async with aiohttp.ClientSession() as session:
-            async with session.post(f'{self.qbittorrent_url}/api/v2/auth/login', data={
-                'username': self.qbittorrent_username,
-                'password': self.qbittorrent_password
-            }) as response:
-                cookies = session.cookie_jar.filter_cookies(self.qbittorrent_url)
-                return cookies
-
-    async def get_torrents(self, cookies):
-        async with aiohttp.ClientSession(cookies=cookies) as session:
-            async with session.get(f'{self.qbittorrent_url}/api/v2/torrents/info?filter=downloading') as response:
-                body = await response.text()
-                print(body) # Print the response body
-                torrents = await response.json()
-                return torrents
 
     @commands.command()
-    async def downloads(self, ctx):
-        print("Your Computer IP Address is:"+IPAddr) 
-        cookies = await self.login()
-        torrents = await self.get_torrents(cookies)
+    async def qbstatus(self, ctx):
+        """Check the status of downloads in qBittorrent"""
+        # Set the URL to your qBittorrent WebUI
+        url = "http://192.168.1.68:8080/api/v2/torrents/info"
 
-        embed = discord.Embed(title='qBittorrent Downloads', color=0xff0000)
-        for torrent in torrents:
-            embed.add_field(name=torrent['name'], value=f"Progress: {torrent['progress'] * 100}%")
+        # Set your qBittorrent username and password
+        username = "admin"
+        password = "adminadmin"
 
-        await ctx.send(embed=embed)
+        # Send a request to the qBittorrent WebUI to get the list of torrents
+        response = requests.get(url, auth=(username, password))
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Get the list of torrents from the response
+            torrents = response.json()
+
+            # Create a message with the status of each torrent
+            message = ""
+            for torrent in torrents:
+                message += f"{torrent['name']} - {torrent['state']}\\n"
+
+            # Send the message to Discord
+            await ctx.send(message)
+        else:
+            # If the request was not successful, send an error message
+            await ctx.send("Error: Could not connect to qBittorrent WebUI")
