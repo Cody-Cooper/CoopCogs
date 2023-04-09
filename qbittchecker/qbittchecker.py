@@ -78,7 +78,7 @@ class QbittChecker(commands.Cog):
             torrent for torrent in torrents if torrent['state'] == "errored"]
 
         # Create embed
-        embed = discord.Embed(title='qBittorrent Downloads', color=0x6AA84F)
+        embed = discord.Embed(color=0x6AA84F)
 
         def truncate_name(name, max_length=35):
             return name[:max_length] + ('...' if len(name) > max_length else '')
@@ -89,25 +89,26 @@ class QbittChecker(commands.Cog):
         # Add errored section
         if errored:
             value = '\n'.join(
-                [f"{truncate_name(torrent['name'])}\n" for torrent in errored[:5]])
-        else:
-            value = 'No errors!'
-        add_field(embed, 'Errored', value)
+                [f"```{truncate_name(torrent['name'])}```" for torrent in errored[:5]])
+            add_field(embed, ':no_entry:  Errored', value)
 
         # Add stalled section
         if stalled:
             value = '\n'.join(
-                [f"{truncate_name(torrent['name'])}\n{torrent['num_seeds']} seeds - stalled at {torrent['progress'] * 100:.2f}%" for torrent in stalled[:5]])
-        else:
-            value = 'Nothing stalled!'
-        add_field(embed, 'Stalled Downloads', value)
+                [f"```{truncate_name(torrent['name'])}\
+                    {torrent['num_seeds']} seeds - stalled at {torrent['progress'] * 100:.2f}%```" for torrent in stalled[:5]])
+            add_field(embed, ':warning:  Stalled Downloads', value)
 
         # Add downloading section
         if downloading:
             value = '\n'.join(
-                [f"{truncate_name(torrent['name'])}\n{torrent['num_seeds']} seeds - {torrent['progress'] * 100:.2f}% - {torrent['eta'] // 3600}h {(torrent['eta'] % 3600) // 60}m remaining\n" for torrent in downloading[:5]])
-        else:
-            value = 'Nothing downloading currently!'
-        add_field(embed, 'Downloading', value)
+                [f"```{truncate_name(torrent['name'])}\
+                    {torrent['num_seeds']} seeds - {torrent['progress'] * 100:.2f}% - {torrent['eta'] // 3600}h {(torrent['eta'] % 3600) // 60}m remaining```" for torrent in downloading[:5]])
+            add_field(embed, ':white_check_mark:  Downloading', value)
+
+        # Add footer only if no torrents are found
+        if not errored and not stalled and not downloading:
+            embed.set_footer(
+                text="If your download isn't listed here, it was either not found or stopped by my filters. Let me know and I'll look in to it!")
 
         await ctx.send(embed=embed)
