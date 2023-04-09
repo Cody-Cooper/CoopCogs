@@ -52,12 +52,36 @@ class QbittChecker(commands.Cog):
             await ctx.send("Error retrieving torrents from qBittorrent client.")
             return
 
-        embed = discord.Embed(
-            title=f'qBittorrent Downloads', color=0xff0000)
-        for torrent in torrents:
-            progress = f"{torrent['progress'] * 100:.2f}%"
-            status = torrent['state']
-            name = torrent['name']
+        # Filter torrents by status
+        downloading = [
+            torrent for torrent in torrents if torrent['state'] == "downloading"]
+        stalled = [torrent for torrent in torrents if torrent['state']
+                   == "stalled_downloading"]
+        errored = [
+            torrent for torrent in torrents if torrent['state'] == "errored"]
+
+        # Create embed
+        embed = discord.Embed(title=f'qBittorrent Downloads', color=0x6AA84F)
+
+        # Add errored section
+        if errored:
+            value = "\n".join([f"{torrent['name']}" for torrent in errored])
+            embed.add_field(name="Errored", value=value, inline=True)
+
+        # Add stalled section
+        if stalled:
+            value = "\n".join(
+                [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in stalled])
+            embed.add_field(name="Stalled Downloads",
+                            value=value, inline=True)
+
+        # Add downloading section
+        if downloading:
+            value = "\n".join(
+                [f"{torrent['name']} - {torrent['progress'] * 100:.2f}%" for torrent in downloading])
+            embed.add_field(name="Downloading", value=value, inline=True)
+        else:
             embed.add_field(
-                name=name, value=f"Status: {status}\nProgress: {progress}")
+                name="Downloading", value="Nothing downloading currently!", inline=False)
+
         await ctx.send(embed=embed)
