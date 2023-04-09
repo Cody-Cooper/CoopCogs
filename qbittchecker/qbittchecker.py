@@ -8,6 +8,7 @@ class QbittChecker(commands.Cog):
         self.qbittorrent_url = 'http://192.168.1.68:8800' # URL of your qBittorrent client
         self.qbittorrent_username = 'admin' # Your qBittorrent username
         self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
+        hostname=socket.gethostname()   
         IPAddr=socket.gethostbyname(hostname)
 
     async def login(self):
