@@ -4,7 +4,7 @@ import aiohttp
 class QbittChecker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.qbittorrent_url = 'http://localhost:8800' # URL of your qBittorrent client
+        self.qbittorrent_url = 'http://192.168.1.68:8800' # URL of your qBittorrent client
         self.qbittorrent_username = 'admin' # Your qBittorrent username
         self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
 
