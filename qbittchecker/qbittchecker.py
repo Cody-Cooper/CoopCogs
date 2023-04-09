@@ -19,6 +19,9 @@ class QbittChecker(commands.Cog):
                 'username': self.qbittorrent_username,
                 'password': self.qbittorrent_password
             }, headers=headers) as response:
+                if response.status != 200:
+                    raise Exception(
+                        f"Failed to authenticate with qBittorrent: {response.status}")
                 print(f"Status code: {response.status}")
                 print(f"Response content: {await response.text()}")
                 cookies = session.cookie_jar.filter_cookies(
