@@ -1,12 +1,14 @@
 from redbot.core import commands
 import aiohttp
+import socket 
 
 class QbittChecker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.qbittorrent_url = 'http://172.17.0.2:8080' # URL of your qBittorrent client
+        self.qbittorrent_url = 'http://192.168.1.68:8800' # URL of your qBittorrent client
         self.qbittorrent_username = 'admin' # Your qBittorrent username
         self.qbittorrent_password = 'adminadmin' # Your qBittorrent password
+        IPAddr=socket.gethostbyname(hostname)
 
     async def login(self):
         async with aiohttp.ClientSession() as session:
@@ -27,6 +29,7 @@ class QbittChecker(commands.Cog):
 
     @commands.command()
     async def downloads(self, ctx):
+        print("Your Computer IP Address is:"+IPAddr) 
         cookies = await self.login()
         torrents = await self.get_torrents(cookies)
 
