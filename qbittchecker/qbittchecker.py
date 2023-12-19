@@ -56,7 +56,7 @@ class QbittChecker(commands.Cog):
                     f"Error retrieving torrents from qBittorrent client: {str(e)}")
 
     @commands.command()
-    async def downloads(self, ctx: discord.ext.commands.Context) -> None:
+    async def downloads(self, ctx: commands.Context) -> None:
         """
         Retrieves torrents from qBittorrent client and sends an embed with their status.
 
@@ -83,28 +83,28 @@ class QbittChecker(commands.Cog):
         def truncate_name(name, max_length=35):
             return name[:max_length] + ('...' if len(name) > max_length else '')
 
-        def add_field(embed, name, value):
+        def add_field(name, value):
             embed.add_field(name=name, value=value, inline=False)
 
         # Add errored section
         if errored:
             value = '\n'.join(
                 [f"```{truncate_name(torrent['name'])}```" for torrent in errored[:5]])
-            add_field(embed, ':no_entry:  Errored', value)
+            add_field(':no_entry:  Errored', value)
 
         # Add stalled section
         if stalled:
             value = '\n'.join(
                 [f"```{truncate_name(torrent['name'])}\
                     {torrent['num_seeds']} seeds - stalled at {torrent['progress'] * 100:.2f}%```" for torrent in stalled[:5]])
-            add_field(embed, ':warning:  Stalled Downloads', value)
+            add_field(':warning:  Stalled Downloads', value)
 
         # Add downloading section
         if downloading:
             value = '\n'.join(
                 [f"```{truncate_name(torrent['name'])}\
                     {torrent['num_seeds']} seeds - {torrent['progress'] * 100:.2f}% - {torrent['eta'] // 3600}h {(torrent['eta'] % 3600) // 60}m remaining```" for torrent in downloading[:5]])
-            add_field(embed, ':white_check_mark:  Downloading', value)
+            add_field(':white_check_mark:  Downloading', value)
 
         # Add footer only if no torrents are found
         if not errored and not stalled and not downloading:
@@ -112,3 +112,7 @@ class QbittChecker(commands.Cog):
                 text="If your download isn't listed here, it was either not found or stopped by my filters. Let me know and I'll look in to it!")
 
         await ctx.send(embed=embed)
+
+
+def setup(bot):
+    bot.add_cog(QbittChecker(bot))
